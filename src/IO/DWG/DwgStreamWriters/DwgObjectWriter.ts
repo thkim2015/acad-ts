@@ -2171,7 +2171,9 @@ export class DwgObjectWriter extends DwgSectionIO {
 		this._writer.write3BitDouble(leader.horizontalDirection);
 		this._writer.write3BitDouble(leader.blockOffset);
 
-		if (this._version >= ACadVersion.AC1014) {
+		// endptproj exists from R14 through R2007 only (libredwg dwg.spec LEADER);
+		// writing it for 2010+ shifts every field that follows.
+		if (this._version >= ACadVersion.AC1014 && this._version <= ACadVersion.AC1021) {
 			this._writer.write3BitDouble(leader.annotationOffset);
 		}
 

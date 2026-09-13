@@ -3094,7 +3094,8 @@ export class DwgObjectReader extends DwgSectionIO {
     leader.normal = this._objectReader.read3BitDouble();
     leader.horizontalDirection = this._objectReader.read3BitDouble();
     leader.blockOffset = this._objectReader.read3BitDouble();
-    if (this._version >= ACadVersion.AC1014) {
+    // endptproj exists from R14 through R2007 only (libredwg dwg.spec LEADER).
+    if (this._version >= ACadVersion.AC1014 && this._version <= ACadVersion.AC1021) {
       leader.annotationOffset = this._objectReader.read3BitDouble();
     }
     if (this.r13_14Only) {
