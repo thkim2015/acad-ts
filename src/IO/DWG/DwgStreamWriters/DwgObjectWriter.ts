@@ -2958,8 +2958,9 @@ export class DwgObjectWriter extends DwgSectionIO {
 		this._writer.writeBitDouble(mtext.height);
 		this._writer.writeBitShort(mtext.attachmentPoint);
 		this._writer.writeBitShort(mtext.drawingDirection);
-		this._writer.writeBitDouble(0);
-		this._writer.writeBitDouble(0);
+		// DWG order is extents height, then extents width (ODA spec / libredwg dwg.spec MTEXT)
+		this._writer.writeBitDouble(mtext.verticalHeight);
+		this._writer.writeBitDouble(mtext.horizontalWidth);
 		this._writer.writeVariableText(mtext.value);
 		this._writer.handleReferenceTyped(DwgReferenceType.HardPointer, mtext.style);
 
@@ -2993,8 +2994,9 @@ export class DwgObjectWriter extends DwgSectionIO {
 		this._writer.write3BitDouble(mtext.insertPoint);
 		this._writer.writeBitDouble(mtext.rectangleWidth);
 		this._writer.writeBitDouble(mtext.rectangleHeight);
-		this._writer.writeBitDouble(mtext.horizontalWidth);
+		// Binary DWG stores extents height before width (only DXF uses 42 then 43)
 		this._writer.writeBitDouble(mtext.verticalHeight);
+		this._writer.writeBitDouble(mtext.horizontalWidth);
 
 		const columnData = mtext.columnData;
 		const columnType = columnData?.columnType ?? ColumnType.NoColumns;
@@ -3114,7 +3116,7 @@ export class DwgObjectWriter extends DwgSectionIO {
 			this._writer.writeByte(viewport.defaultLightingType);
 			this._writer.writeBitDouble(viewport.brightness);
 			this._writer.writeBitDouble(viewport.contrast);
-			this._writer.writeCmColor(viewport.ambientLightColor);
+			this._writer.writeCmColor(viewport.ambientLightColor ?? Color.byLayer);
 		}
 
 		if (this.r13_14Only) {
@@ -4342,7 +4344,7 @@ export class DwgObjectWriter extends DwgSectionIO {
 		this._writer.write3BitDouble(layout.maxExtents);
 
 		if (this.r2004Plus) {
-			this._writer.writeBitLong(layout.viewports.length);
+			this._writer.writeBitLong(layout.viewports?.length ?? 0);
 		}
 
 		this._writer.handleReferenceTyped(DwgReferenceType.SoftPointer, layout.associatedBlock);
@@ -4357,7 +4359,7 @@ export class DwgObjectWriter extends DwgSectionIO {
 		}
 
 		if (this.r2004Plus) {
-			for (const viewport of layout.viewports) {
+			for (const viewport of layout.viewports ?? []) {
 				this._writer.handleReferenceTyped(DwgReferenceType.SoftPointer, viewport);
 			}
 		}

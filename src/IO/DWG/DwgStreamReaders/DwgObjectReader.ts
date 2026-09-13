@@ -2063,8 +2063,9 @@ export class DwgObjectReader extends DwgSectionIO {
     mtext.height = this._objectReader.readBitDouble();
     mtext.attachmentPoint = this._objectReader.readBitShort() as AttachmentPointType;
     mtext.drawingDirection = this._objectReader.readBitShort() as DrawingDirectionType;
-    this._objectReader.readBitDouble();
-    this._objectReader.readBitDouble();
+    // Extents height, then extents width (ODA spec / libredwg dwg.spec MTEXT)
+    mtext.verticalHeight = this._objectReader.readBitDouble();
+    mtext.horizontalWidth = this._objectReader.readBitDouble();
     mtext.value = this._textReader.readVariableText();
     template.styleHandle = this._handleReference();
     if (this.r2000Plus) {
@@ -2090,10 +2091,10 @@ export class DwgObjectReader extends DwgSectionIO {
       this._objectReader.readBitLong();
       this._objectReader.read3BitDouble();
       this._objectReader.read3BitDouble();
-      this._objectReader.readBitDouble();
-      this._objectReader.readBitDouble();
-      this._objectReader.readBitDouble();
-      this._objectReader.readBitDouble();
+      this._objectReader.readBitDouble(); // rect width (redundant)
+      this._objectReader.readBitDouble(); // rect height (redundant)
+      mtext.verticalHeight = this._objectReader.readBitDouble();
+      mtext.horizontalWidth = this._objectReader.readBitDouble();
       mtext.columnData.columnType = this._objectReader.readBitShort() as ColumnType;
       if (mtext.columnData.columnType !== ColumnType.NoColumns) {
         const count = this._objectReader.readBitLong();
