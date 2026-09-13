@@ -2179,10 +2179,9 @@ export class DwgObjectWriter extends DwgSectionIO {
 			this._writer.writeBitDouble(leader.style.dimensionLineGap);
 		}
 
-		if (this._version <= ACadVersion.AC1021) {
-			this._writer.writeBitDouble(leader.textHeight);
-			this._writer.writeBitDouble(leader.textWidth);
-		}
+		// Box height/width are common to every version (ODA spec, libredwg dwg.spec LEADER).
+		this._writer.writeBitDouble(leader.textHeight);
+		this._writer.writeBitDouble(leader.textWidth);
 
 		this._writer.writeBit(leader.hookLineDirection === HookLineDirection.Same);
 		this._writer.writeBit(leader.arrowHeadEnabled);

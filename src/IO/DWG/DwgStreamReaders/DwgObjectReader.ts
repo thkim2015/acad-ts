@@ -3100,10 +3100,10 @@ export class DwgObjectReader extends DwgSectionIO {
     if (this.r13_14Only) {
       leader.style.dimensionLineGap = this._objectReader.readBitDouble();
     }
-    if (this._version <= ACadVersion.AC1021) {
-      leader.textHeight = this._objectReader.readBitDouble();
-      leader.textWidth = this._objectReader.readBitDouble();
-    }
+    // Box height/width are common to every version (ODA spec, libredwg dwg.spec LEADER);
+    // gating them on <= R2007 misaligned the stream for 2010+ files.
+    leader.textHeight = this._objectReader.readBitDouble();
+    leader.textWidth = this._objectReader.readBitDouble();
     leader.hookLineDirection = this._objectReader.readBit() ? HookLineDirection.Same : HookLineDirection.Opposite;
     leader.arrowHeadEnabled = this._objectReader.readBit();
     if (this.r13_14Only) {
